@@ -10,6 +10,7 @@ exports.createTask = async (req, res) => {
   }
   
   try{
+    // console.log(req.body);
     const { project } = req.body
     const existProject = await Project.findById(project)
 
@@ -24,11 +25,9 @@ exports.createTask = async (req, res) => {
 
     // Create new task
     const task = new Task(req.body)
-
     // Save the project
     task.save();
     res.status(200).json({ task })
-
   } catch (error) {
     console.log(error);
     res.status(500).send('There was a mistake')
@@ -45,7 +44,7 @@ exports.getTasks = async ( req, res ) => {
   
   try {
 
-    const { project } = req.body
+    const { project } = req.query
     const existProject = await Project.findById(project)
 
     if(!existProject) {
@@ -57,7 +56,7 @@ exports.getTasks = async ( req, res ) => {
       return res.status(401).json({ msg: 'No authorized' })
     }
 
-    const tasks = await Task.find({ project }).sort({ date: -1})
+    const tasks = await Task.find({ project }).sort({ date: -1 })
     res.json({ tasks })
   } catch (error) {
     console.log(error)
@@ -77,15 +76,15 @@ exports.updateTask = async (req, res) => {
     
     // Check the author of the project and the actual guy to be the same
     const existProject = await Project.findById(project)
-    console.log(existProject);
+    // console.log(existProject);
     if(existProject.author.toString() !== req.user.id ){
       return res.status(401).json({ msg: 'No authorized' })
     }
 
     // Create an object with the new information
     const newTask = {}
-    if(name) newTask.name = name;
-    if(state) newTask.state = state;
+    newTask.name = name;
+    newTask.state = state;
     
     const task = await Task.findOneAndUpdate({_id : req.params.id }, newTask, { new: true})
 
@@ -100,7 +99,7 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     // Extract the project and check if exist
-    const { project } = req.body
+    const { project } = req.query
     
     const exist = await Task.findById(req.params.id)
     if(!exist) {
@@ -109,7 +108,7 @@ exports.deleteTask = async (req, res) => {
     
     // Check the author of the project and the actual guy to be the same
     const existProject = await Project.findById(project)
-    console.log(existProject);
+    // console.log(existProject);
     if(existProject.author.toString() !== req.user.id ){
       return res.status(401).json({ msg: 'No authorized' })
     }
