@@ -24,5 +24,5 @@ server.use('/api/projects', require('./routes/project'))
 server.use('/api/tasks', require('./routes/task'))
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`The server is running on localhost:${PORT}`)
+  console.log(`The server is running`)
 })
